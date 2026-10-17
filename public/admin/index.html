@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="uz">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Shajara — boshqaruv</title>
+    <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
+  </head>
+  <body>
+    <script>window.CMS_MANUAL_INIT = true;</script>
+    <script src="https://unpkg.com/decap-cms@^3.17.1/dist/decap-cms.js"></script>
+    <script>
+      (async function () {
+        // Repo nomi va branch serverdan olinadi (Vercel buni o'zi biladi),
+        // shuning uchun config.yml ni qo'lda tahrirlash shart emas.
+        var backend = { base_url: window.location.origin };
+        try {
+          var res = await fetch('/api/cms-config', { cache: 'no-store' });
+          if (res.ok) {
+            var info = await res.json();
+            if (info.repo) backend.repo = info.repo;
+            if (info.branch) backend.branch = info.branch;
+          }
+        } catch (e) {}
+        window.CMS.init({ config: { backend: backend } });
+      })();
+    </script>
+  </body>
+</html>

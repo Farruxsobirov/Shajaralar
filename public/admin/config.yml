@@ -1,0 +1,101 @@
+# Decap CMS sozlamalari.
+# backend.repo, branch va base_url /admin/index.html ichida avtomatik qo'yiladi,
+# shuning uchun bu yerda hech narsani o'zgartirish shart emas.
+backend:
+  name: github
+  repo: OWNER/REPO
+  branch: main
+  auth_endpoint: api/auth
+
+# Kompyuterda ishlaganda (npx decap-server) GitHub'siz tahrirlash uchun
+local_backend: true
+
+locale: en
+publish_mode: simple
+
+media_folder: public/rasmlar
+public_folder: /rasmlar
+
+# Fayl nomlari faqat lotin harflaridan bo'lsin (O'g'iloy -> o-g-iloy)
+slug:
+  encoding: ascii
+  clean_accents: true
+  sanitize_replacement: "-"
+
+site_url: /
+display_url: /
+logo_url: /favicon.ico
+
+collections:
+  - name: azolar
+    label: Oila a'zolari
+    label_singular: A'zo
+    description: Shajaradagi har bir odam alohida yozuv. Ota-onasi va turmush o'rtog'ini ro'yxatdan tanlang.
+    folder: content/azolar
+    format: json
+    extension: json
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    identifier_field: ism
+    editor: { preview: false }
+    summary: "{{ism}} {{familiya}} {{tugilgan_yil}}"
+    sortable_fields: ["ism", "tugilgan_yil"]
+    fields:
+      - { name: ism, label: Ism, widget: string }
+      - { name: familiya, label: Familiya, widget: string, required: false }
+      - name: jins
+        label: Jinsi
+        widget: select
+        options:
+          - { label: Erkak, value: erkak }
+          - { label: Ayol, value: ayol }
+      - name: rasm
+        label: Rasm
+        widget: image
+        required: false
+        hint: Yuzi aniq ko'rinadigan, 1 MB dan kichik rasm tanlang.
+        choose_url: false
+      - { name: tugilgan_yil, label: Tug'ilgan yili, widget: string, required: false, pattern: ['^\d{4}$', "4 xonali yil yozing, masalan 1956"] }
+      - { name: vafot_yil, label: Vafot etgan yili, widget: string, required: false, hint: Hayot bo'lsa bo'sh qoldiring., pattern: ['^\d{4}$', "4 xonali yil yozing, masalan 2010"] }
+      - name: ota
+        label: Otasi
+        widget: relation
+        collection: azolar
+        value_field: "{{slug}}"
+        search_fields: ["ism", "familiya"]
+        display_fields: ["ism", "familiya", "tugilgan_yil"]
+        options_length: 500
+        required: false
+      - name: ona
+        label: Onasi
+        widget: relation
+        collection: azolar
+        value_field: "{{slug}}"
+        search_fields: ["ism", "familiya"]
+        display_fields: ["ism", "familiya", "tugilgan_yil"]
+        options_length: 500
+        required: false
+      - name: turmush_ortogi
+        label: Turmush o'rtog'i
+        widget: relation
+        collection: azolar
+        value_field: "{{slug}}"
+        search_fields: ["ism", "familiya"]
+        display_fields: ["ism", "familiya", "tugilgan_yil"]
+        options_length: 500
+        multiple: true
+        required: false
+        hint: Faqat bir tomonda belgilash kifoya, ikkinchisida avtomatik ko'rinadi.
+      - { name: haqida, label: Qisqacha ma'lumot, widget: text, required: false }
+
+  - name: sozlamalar
+    label: Sayt sozlamalari
+    files:
+      - name: umumiy
+        label: Sarlavha va tavsif
+        file: content/sozlamalar.json
+        editor: { preview: false }
+        fields:
+          - { name: sarlavha, label: Sarlavha, widget: string, hint: "Masalan: Karimovlar shajarasi" }
+          - { name: tavsif, label: Tavsif, widget: text, required: false }
